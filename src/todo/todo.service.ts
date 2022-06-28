@@ -9,7 +9,9 @@ export class TodoService {
   constructor(@InjectModel(Todo) private todoModel: typeof Todo) {}
 
   async findAll(): Promise<Todo[]> {
-    return this.todoModel.findAll();
+    return this.todoModel.findAll({
+      order: [['id', 'ASC']],
+    });
   }
 
   async findOne(id: string): Promise<Todo> {
@@ -30,10 +32,13 @@ export class TodoService {
     changeTodo: ChangeTodoDto,
   ): Promise<[affectedCount: number, affectedRows: Todo[]]> {
     return this.todoModel.update(
+      { ...changeTodo },
       {
-        ...changeTodo,
+        where: {
+          id,
+        },
+        returning: true,
       },
-      { where: { id }, returning: true },
     );
   }
 
